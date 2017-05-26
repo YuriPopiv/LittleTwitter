@@ -1,3 +1,3 @@
 # LittleTwitter
 
-Implementing Twitter Timeline with RecyclerView
+Implementing Twitter Timeline with RecyclerView in Android.
