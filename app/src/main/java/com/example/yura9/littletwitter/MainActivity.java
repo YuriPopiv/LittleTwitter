@@ -4,18 +4,36 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.core.services.StatusesService;
+import com.twitter.sdk.android.tweetui.CompactTweetView;
 import com.twitter.sdk.android.tweetui.TweetTimelineListAdapter;
+import com.twitter.sdk.android.tweetui.TweetUtils;
+import com.twitter.sdk.android.tweetui.TweetView;
 import com.twitter.sdk.android.tweetui.UserTimeline;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.fabric.sdk.android.Fabric;
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,8 +43,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private static final String TWITTER_KEY = "	wNCNyDrvtjAiSkygZhFUKlLKL";
     private static final String TWITTER_SECRET = "d28iZAHo9XfbcDyLseesRrB7QsDmqxGd0DiDXB82ryBXSogTkR";
-
-    private ListView listView;
+    private RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,11 +52,12 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-        listView = (ListView) findViewById(R.id.list);
+        mRecyclerView = (RecyclerView)findViewById(R.id.recycler);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
+
 
         /**
          * @param userTimeLine which shows the @QWERTY user’s timeline of Tweets
@@ -48,14 +66,14 @@ public class MainActivity extends AppCompatActivity {
                 .screenName("QWERTY")
                 .build();
 
-        /**
-         * @instance TweetTimelineListAdapter accepts any #Timeline and handles loading older Tweets and recycling views.
-         * #Timelines use guest authentication automatically so no auth setup is needed.
-         */
-        final TweetTimelineListAdapter adapter = new TweetTimelineListAdapter.Builder(this)
-                .setTimeline(userTimeline)
-                .build();
+        final TweetTimelineAdapter adapter = new TweetTimelineAdapter(this, userTimeline);
 
-        listView.setAdapter(adapter);
+        mRecyclerView.setAdapter(adapter);
+
+
     }
+
+    
+
+
 }
